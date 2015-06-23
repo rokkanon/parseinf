@@ -3,6 +3,9 @@ import cStringIO
 import token
 import tokenize
 
+class BadExpresson:
+    def __init__(self):
+        pass
 
 class Token:
     ops = '+-*/'
@@ -61,10 +64,7 @@ class Application:
 
     def tokenize(self):
         text = cStringIO.StringIO(self.line2parse)
-        try:
-            tokenize.tokenize(text.readline, self)
-        except tokenize.TokenError, ex:
-            pass
+        tokenize.tokenize(text.readline, self)
 
     def __call__(self, toktype, toktext, (srow, scol), (erow, ecol), line):
         """ Token handler.
@@ -77,9 +77,8 @@ class Application:
             # ignoring invalid tokens
             self.tokens.append(t)
 
-        if 1:
+        if 0:
             print "type", toktype, token.tok_name[toktype], "text", toktext
-            #print "start", srow, scol, "end", erow, ecol
 
     def parse(self):
         for t in self.tokens:
@@ -124,7 +123,7 @@ class Application:
     @staticmethod
     def usage():
         print("usage " + sys.argv[0] + "<airthmetic expression>")
-        print("for example " + sys.argv[0] + "2 + 3 * 4")
+        print("for example: " + sys.argv[0] + "2 + 3 * (4 - 2)")
 
 if __name__ == "__main__":
     f = sys.stdin
@@ -132,4 +131,8 @@ if __name__ == "__main__":
         Application.usage()
     else:
         app = Application(sys.argv[1])
-        app.run()
+
+        try:
+            app.run()
+        except:
+            print("bad input: " + sys.argv[1])
