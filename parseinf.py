@@ -67,8 +67,6 @@ class Application:
         tokenize.tokenize(text.readline, self)
 
     def __call__(self, toktype, toktext, (srow, scol), (erow, ecol), line):
-        """ Token handler.
-        """
 
         t = Token(toktype, toktext)
 
@@ -90,31 +88,28 @@ class Application:
                 else:
                     if t.is_right_paren():
                         while not self.operators[-1].is_left_paren():
-                            op = self.operators.pop()
-                            v1 = self.values.pop()
-                            v2 = self.values.pop()
-                            self.values.append(op.apply(v1, v2))
+                            self.compute_top()
 
                         # getting rid of left parenthesis
                         self.operators.pop()
                     else:
                         if t.is_operator():
                             while len(self.operators) > 0 and t.same_or_less_prec(self.operators[-1]):
-                                op = self.operators.pop()
-                                v1 = self.values.pop()
-                                v2 = self.values.pop()
-                                self.values.append(op.apply(v1, v2))
+                                self.compute_top()
 
                             self.operators.append(t)
 
         # all tokens are processed
         while len(self.operators) > 0:
-            op = self.operators.pop()
-            v1 = self.values.pop()
-            v2 = self.values.pop()
-            self.values.append(op.apply(v1, v2))
+            self.compute_top()
 
         print(self.values[0].get_val())
+
+    def compute_top(self):
+        op = self.operators.pop()
+        v1 = self.values.pop()
+        v2 = self.values.pop()
+        self.values.append(op.apply(v2, v1))
 
     def run(self):
         self.tokenize()
@@ -123,7 +118,7 @@ class Application:
     @staticmethod
     def usage():
         print("usage " + sys.argv[0] + "<airthmetic expression>")
-        print("for example: " + sys.argv[0] + "2 + 3 * (4 - 2)")
+        print("for example: " + sys.argv[0] + " \"2 + 3 * (4 - 2)\"")
 
 if __name__ == "__main__":
     f = sys.stdin
