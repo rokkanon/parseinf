@@ -61,10 +61,10 @@ class Application:
 
     def tokenize(self):
         text = cStringIO.StringIO(self.line2parse)
-        #try:
-        tokenize.tokenize(text.readline, self)
-        #except tokenize.TokenError, ex:
-        #pass
+        try:
+            tokenize.tokenize(text.readline, self)
+        except tokenize.TokenError, ex:
+            pass
 
     def __call__(self, toktype, toktext, (srow, scol), (erow, ecol), line):
         """ Token handler.
